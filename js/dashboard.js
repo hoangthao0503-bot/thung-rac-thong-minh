@@ -32,9 +32,37 @@ const ACTIVITIES = [
   { icon: 'fas fa-exclamation-triangle', type: 'red', text: '<strong>BIN-007</strong> đã đầy 91% — cần thu gom!', time: '25 phút trước' },
 ];
 
+const MATERIALS_DATA = [
+  { name: 'Vỏ ngoài', material: 'Nhựa tái chế HDPE', properties: 'Bền, chống thấm nước, chống ăn mòn', sustainability: 'Sử dụng vật liệu tái chế giúp giảm lượng rác thải nhựa.' },
+  { name: 'Khung sườn', material: 'Thép không gỉ (Inox 304)', properties: 'Chắc chắn, chống gỉ sét, chịu lực tốt', sustainability: 'Tuổi thọ cao, giảm nhu cầu thay thế, có thể tái chế.' },
+  { name: 'Cảm biến', material: 'Hợp kim và linh kiện điện tử', properties: 'Đo khoảng cách (siêu âm), nhận diện vật thể (hồng ngoại), cảm biến trọng lượng', sustainability: 'Linh kiện có thể tháo rời để tái chế hoặc thay thế khi hỏng.' },
+  { name: 'Bảng mạch điều khiển', material: 'PCB (Printed Circuit Board)', properties: 'Điều khiển các module, xử lý dữ liệu cảm biến', sustainability: 'Tuân thủ RoHS, thiết kế module hóa dễ sửa chữa.' },
+  { name: 'Hệ thống phân loại', material: 'Nhựa ABS và Động cơ Servo', properties: 'Cơ chế chia ngăn tự động, hoạt động êm ái', sustainability: 'Thiết kế module, dễ dàng bảo trì và thay thế.' },
+  { name: 'Pin/Nguồn điện', material: 'Pin Lithium-ion (có thể sạc lại) / Năng lượng mặt trời', properties: 'Cung cấp năng lượng chính, thời gian sử dụng lâu dài', sustainability: 'Sử dụng năng lượng sạch, pin có vòng đời dài và an toàn với môi trường.' },
+  { name: 'Module truyền thông', material: 'Linh kiện điện tử (Wi-Fi, LoRaWAN)', properties: 'Gửi dữ liệu lên cloud, nhận lệnh điều khiển', sustainability: 'Tiết kiệm năng lượng, tối ưu hóa truyền tải dữ liệu.' },
+];
+
+const TECHNOLOGY_DATA = [
+  { category: 'Phần cứng', items: [
+    { name: 'Vi điều khiển', tech: 'ESP32 / Arduino', description: 'Bộ não của thùng rác, xử lý dữ liệu cảm biến và điều khiển các cơ cấu.' },
+    { name: 'Cảm biến siêu âm', tech: 'HC-SR04', description: 'Đo mức độ đầy của rác trong các ngăn.' },
+    { name: 'Cảm biến hồng ngoại', tech: 'IR Sensor', description: 'Nhận diện vật thể khi người dùng đưa rác vào.' },
+    { name: 'Cảm biến trọng lượng', tech: 'Load Cell', description: 'Đo trọng lượng rác thải.' },
+    { name: 'Module Wi-Fi/LoRaWAN', tech: 'ESP32 tích hợp / Ra-02', description: 'Truyền dữ liệu lên nền tảng IoT Cloud.' },
+    { name: 'Động cơ Servo', tech: 'SG90 / MG996R', description: 'Điều khiển cơ chế phân loại rác tự động.' },
+    { name: 'Màn hình hiển thị', tech: 'OLED Display', description: 'Hiển thị thông tin trạng thái, điểm thưởng cho người dùng.' },
+    { name: 'Camera (tùy chọn)', tech: 'ESP32-CAM', description: 'Phân tích hình ảnh rác thải bằng AI để nhận diện loại rác chính xác hơn.' },
+  ]},
+  { category: 'Phần mềm & Nền tảng', items: [
+    { name: 'Ngôn ngữ lập trình', tech: 'C++ (Arduino IDE) / MicroPython', description: 'Lập trình cho vi điều khiển.' },
+    { name: 'Nền tảng IoT Cloud', tech: ' Blynk / ThingSpeak / AWS IoT Core', description: 'Thu thập, lưu trữ và phân tích dữ liệu từ thùng rác.' },
+    { name: 'Giao diện Dashboard', tech: 'HTML, CSS, JavaScript (Chart.js, Leaflet.js)', description: 'Giao diện người dùng để quản lý và theo dõi hệ thống.' },
+    { name: 'Thuật toán AI', tech: 'TensorFlow Lite / OpenCV (trên Edge device)', description: 'Nhận diện và phân loại rác tự động bằng thị giác máy tính (nếu có camera).' },
+    { name: 'API Gateway', tech: 'Cloudflare Workers', description: 'Xử lý các yêu cầu từ thiết bị và gửi dữ liệu đến Dashboard, đảm bảo bảo mật và hiệu suất.' },
+  ]},
+];
+
 // ===== INITIALIZE MAP =====
-function initMap() {
-  const map = L.map('map', {
     zoomControl: false,
     attributionControl: false
   }).setView([10.775, 106.695], 12);
@@ -214,18 +242,119 @@ function renderBinsTable() {
   }).join('');
 }
 
-// ===== ACTIVITY FEED =====
-function renderActivity() {
-  const container = document.getElementById('activityFeed');
-  container.innerHTML = ACTIVITIES.map(act => `
-    <div class="activity-item">
-      <div class="activity-icon activity-icon--${act.type}"><i class="${act.icon}"></i></div>
-      <div>
-        <div class="activity-text">${act.text}</div>
-        <div class="activity-time">${act.time}</div>
+// ===== MATERIALS & TECHNOLOGY =====
+function renderMaterials() {
+  const container = document.getElementById('materials-content');
+  if (!container) return;
+  container.innerHTML = `<div class="info-grid">
+    ${MATERIALS_DATA.map((item, index) => `
+      <div class="info-item" onclick="showMaterialDetail(${index})">
+        <div class="info-item__icon" style="background: var(--accent-orange)15; color: var(--accent-orange);">
+          <i class="fas fa-box"></i>
+        </div>
+        <div class="info-item__content">
+          <div class="info-item__title">${item.name}</div>
+          <div class="info-item__desc">${item.material}</div>
+        </div>
+      </div>
+    `).join('')}
+  </div>`;
+}
+
+function renderTechnology() {
+  const container = document.getElementById('technology-content');
+  if (!container) return;
+  
+  let html = '';
+  TECHNOLOGY_DATA.forEach((cat, catIdx) => {
+    html += `
+      <div style="margin-bottom: 24px;">
+        <h4 style="margin-bottom: 16px; color: var(--text-secondary); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px;">${cat.category}</h4>
+        <div class="info-grid">
+          ${cat.items.map((item, itemIdx) => `
+            <div class="info-item" onclick="showTechDetail(${catIdx}, ${itemIdx})">
+              <div class="info-item__icon" style="background: var(--accent-purple)15; color: var(--accent-purple);">
+                <i class="fas fa-microchip"></i>
+              </div>
+              <div class="info-item__content">
+                <div class="info-item__title">${item.name}</div>
+                <div class="info-item__desc">${item.tech}</div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  });
+  container.innerHTML = html;
+}
+
+// ===== DETAIL VIEW (MODAL) =====
+function showDetail(title, content, analysis = null) {
+  const modal = document.createElement('div');
+  modal.className = 'modal-overlay';
+  
+  let analysisHtml = analysis ? `
+    <div style="margin-top: 20px; padding: 15px; background: rgba(16,185,129,0.05); border-radius: var(--radius-md); border: 1px solid rgba(16,185,129,0.15);">
+      <h4 style="margin-bottom: 12px; color: var(--accent-green); display: flex; align-items: center; gap: 8px;">
+        <i class="fas fa-microscope"></i> Phân tích chi tiết
+      </h4>
+      <ul style="list-style: none; color: var(--text-secondary); font-size: 0.88rem; padding: 0;">
+        ${analysis.map(point => `
+          <li style="margin-bottom: 10px; display: flex; align-items: flex-start; gap: 10px;">
+            <i class="fas fa-check-circle" style="color: var(--accent-green); margin-top: 3px; font-size: 0.8rem;"></i>
+            <span>${point}</span>
+          </li>
+        `).join('')}
+      </ul>
+    </div>
+  ` : `
+    <div style="margin-top: 20px; padding: 15px; background: var(--bg-glass); border-radius: var(--radius-md); border: 1px solid var(--border-glass);">
+      <h4 style="margin-bottom: 10px; color: var(--accent-green);">Thông tin chung:</h4>
+      <p style="color: var(--text-secondary); font-size: 0.9rem;">Hệ thống đang hoạt động ổn định với hiệu năng tối ưu hóa 25% so với phiên bản cũ.</p>
+    </div>
+  `;
+
+  modal.innerHTML = `
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">${title}</h3>
+        <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div style="font-size: 1rem; line-height: 1.6; color: var(--text-primary); margin-bottom: 20px;">
+          ${content}
+        </div>
+        ${analysisHtml}
+      </div>
+      <div class="modal-footer" style="padding: 16px 24px; border-top: 1px solid var(--border-glass); display: flex; justify-content: flex-end;">
+        <button class="header__btn" style="width: auto; padding: 0 20px; font-weight: 600; background: var(--accent-green); color: #000;" onclick="this.closest('.modal-overlay').remove()">Đóng</button>
       </div>
     </div>
-  `).join('');
+  `;
+  document.body.appendChild(modal);
+  setTimeout(() => modal.classList.add('active'), 10);
+  modal.onclick = (e) => { if(e.target === modal) modal.remove(); };
+}
+
+function showMaterialDetail(index) {
+  const item = MATERIALS_DATA[index];
+  const analysis = [
+    `<strong>Độ bền:</strong> ${item.properties}`,
+    `<strong>Tác động môi trường:</strong> ${item.sustainability}`,
+    `<strong>Khả năng thay thế:</strong> Dễ dàng bảo trì và thay thế linh kiện định kỳ.`
+  ];
+  showDetail(item.name, `Sử dụng vật liệu <strong>${item.material}</strong> giúp tăng cường độ bền và tính thẩm mỹ cho hệ thống.`, analysis);
+}
+
+function showTechDetail(catIndex, itemIndex) {
+  const item = TECHNOLOGY_DATA[catIndex].items[itemIndex];
+  const analysis = [
+    `<strong>Công nghệ:</strong> ${item.tech}`,
+    `<strong>Ưu điểm:</strong> Tốc độ xử lý nhanh, độ trễ thấp và tiết kiệm điện năng.`,
+    `<strong>Ứng dụng:</strong> Đóng vai trò quan trọng trong việc ${item.description.toLowerCase()}`
+  ];
+  showDetail(item.name, item.description, analysis);
 }
 
 // ===== REFRESH BUTTON =====
@@ -256,4 +385,99 @@ document.addEventListener('DOMContentLoaded', () => {
   renderLeaderboard();
   renderBinsTable();
   renderActivity();
+  renderMaterials();
+  renderTechnology();
+
+  const dashboardSections = {
+    'overview': ['stats-row', 'grid-2', 'grid-3-1', 'materials-section', 'technology-section'],
+    'map': ['map-container'],
+    'analytics': ['classificationChart', 'trendChart'],
+    'bins': ['binsTable'], // Assuming binsTable is the main element for bins page
+    'collection': [], // Placeholder for collection page content
+    'rewards': ['leaderboard'], // Assuming leaderboard is part of rewards
+    'materials': ['materials-section'],
+    'technology': ['technology-section'],
+  };
+
+  function showSection(page) {
+    // Hide all sections
+    document.querySelectorAll('.dashboard > div').forEach(section => {
+      if (section.id !== 'map') { // Keep the Leaflet map container itself hidden/shown by Leaflet
+        section.style.display = 'none';
+      }
+    });
+    document.getElementById('materials-section').style.display = 'none';
+    document.getElementById('technology-section').style.display = 'none';
+
+    // Show relevant sections for the current page
+    if (dashboardSections[page]) {
+      dashboardSections[page].forEach(sectionId => {
+        const sectionElement = document.getElementById(sectionId) || document.querySelector(`.${sectionId}`);
+        if (sectionElement) {
+          if (sectionId === 'map-container') {
+            sectionElement.style.display = ''; // Use default display for grid/flex
+            // Invalidate map size if it becomes visible after being hidden
+            setTimeout(() => { map.invalidateSize(); }, 100);
+          } else if (sectionId === 'stats-row' || sectionId === 'grid-2' || sectionId === 'grid-3-1') {
+            sectionElement.style.display = 'grid';
+          } else {
+            sectionElement.style.display = '';
+          }
+        }
+      });
+    }
+
+    // Update header title
+    const titleElement = document.querySelector('.header__title');
+    if (titleElement) {
+      let newTitle = '📊 Dashboard';
+      if (page === 'map') newTitle = '🗺️ Bản đồ Thùng rác';
+      else if (page === 'analytics') newTitle = '📈 Phân tích Dữ liệu';
+      else if (page === 'bins') newTitle = '🗑️ Quản lý Thùng rác';
+      else if (page === 'collection') newTitle = '🚚 Lịch trình Thu gom';
+      else if (page === 'rewards') newTitle = '🏆 Điểm thưởng & Xếp hạng';
+      else if (page === 'materials') newTitle = '📦 Nguyên vật liệu';
+      else if (page === 'technology') newTitle = '💡 Công nghệ Kết hợp';
+      titleElement.innerHTML = newTitle;
+    }
+  }
+
+  // Initial load: show overview
+  showSection('overview');
+
+  // Sidebar navigation
+  document.querySelectorAll('.sidebar__link').forEach(link => {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      document.querySelectorAll('.sidebar__link').forEach(l => l.classList.remove('active'));
+      this.classList.add('active');
+      const page = this.getAttribute('data-page');
+      if (page) showSection(page);
+    });
+  });
+
+  // Panel action links
+  document.querySelectorAll('.panel__action').forEach(actionLink => {
+    actionLink.addEventListener('click', function(e) {
+      e.preventDefault();
+      const page = this.getAttribute('data-page');
+      if (page) {
+        // Find and activate the corresponding sidebar link
+        document.querySelectorAll('.sidebar__link').forEach(l => l.classList.remove('active'));
+        const sidebarLink = document.querySelector(`.sidebar__link[data-page="${page}"]`);
+        if (sidebarLink) sidebarLink.classList.add('active');
+        showSection(page);
+      }
+    });
+  });
+
+  // Add click to stat-cards for detail view
+  document.querySelectorAll('.stat-card').forEach(card => {
+    card.style.cursor = 'pointer';
+    card.addEventListener('click', () => {
+      const label = card.querySelector('.stat-card__label').innerText;
+      const value = card.querySelector('.stat-card__value').innerText;
+      showDetail(label, `Dữ liệu hiện tại là ${value}. Biểu đồ xu hướng cho thấy sự tăng trưởng ổn định trong 30 ngày qua.`);
+    });
+  });
 });
