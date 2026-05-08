@@ -393,6 +393,31 @@ h1,h2,h3,h4,h5 { font-family: 'Outfit', sans-serif; }
   100% { transform: scale(1); opacity: 1; }
 }
 
+/* ===== AI SUMMARY & SKELETON ===== */
+.skeleton-text {
+  height: 14px;
+  background: var(--bg-glass);
+  margin-bottom: 12px;
+  border-radius: 4px;
+  position: relative;
+  overflow: hidden;
+}
+.skeleton-text::after {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
+  animation: loading 1.5s infinite;
+}
+@keyframes loading {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+#aiSummaryContent strong { color: var(--accent-purple); font-weight: 700; }
+#aiSummaryContent .highlight-green { color: var(--accent-green); font-weight: 600; }
+#aiSummaryContent .highlight-red { color: var(--accent-red); font-weight: 600; }
+
 /* Responsive */
 @media (max-width: 1200px) {
   .stats-row { grid-template-columns: repeat(2, 1fr); }

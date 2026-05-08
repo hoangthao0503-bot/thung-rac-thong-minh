@@ -455,6 +455,44 @@ function showNotification(message) {
   }, 5000);
 }
 
+// ===== AI ANALYSIS SUMMARY =====
+function generateAISummary() {
+  const container = document.getElementById('aiSummaryContent');
+  if (!container) return;
+
+  // Hiển thị loading skeleton
+  container.innerHTML = `
+    <div class="skeleton-text"></div>
+    <div class="skeleton-text" style="width: 80%;"></div>
+  `;
+
+  setTimeout(() => {
+    const totalBins = BINS_DATA.length;
+    const fullBins = BINS_DATA.filter(b => b.status === 'full').length;
+    const avgFill = Math.round(BINS_DATA.reduce((acc, curr) => acc + curr.fill, 0) / totalBins);
+    
+    // Tìm loại rác nhiều nhất
+    const categories = ['Nhựa', 'Giấy', 'Kim loại', 'Hữu cơ'];
+    const catTotals = categories.map(cat => ({
+      name: cat,
+      total: BINS_DATA.filter(b => b.category === cat).reduce((acc, curr) => acc + curr.fill, 0)
+    }));
+    const topCategory = catTotals.sort((a, b) => b.total - a.total)[0];
+
+    let summary = `Dựa trên dữ liệu thời gian thực, hệ thống EcoBin ghi nhận mức độ lấp đầy trung bình là <span class="highlight-green">${avgFill}%</span>. `;
+    
+    if (fullBins > 0) {
+      summary += `Hiện có <span class="highlight-red">${fullBins} thùng rác đã đầy</span> cần được thu gom ngay lập tức tại các khu vực như <strong>${BINS_DATA.find(b => b.status === 'full')?.location}</strong>. `;
+    } else {
+      summary += `Tất cả các thùng rác đều đang ở mức an toàn. `;
+    }
+
+    summary += `<br><br>Phân tích loại rác cho thấy <strong>${topCategory.name}</strong> đang chiếm tỷ trọng lớn nhất. AI dự báo nhu cầu thu gom sẽ tăng cao tại các khu vực <strong>Vinhomes</strong> và <strong>Bách Khoa</strong> trong 2 giờ tới do mật độ sử dụng tăng đột biến. <br><strong>Khuyến nghị:</strong> Điều phối thêm xe thu gom loại rác <strong>${topCategory.name}</strong> để tối ưu hóa lộ trình.`;
+
+    container.innerHTML = summary;
+  }, 1200);
+}
+
 async function syncBinsToWorker() {
   try {
     await fetch(`${WORKER_URL}/api/update`, {
@@ -492,9 +530,16 @@ function simulateWasteEvent() {
 // ===== INIT ALL =====
 document.addEventListener('DOMContentLoaded', () => {
   fetchBinsFromWorker();
+  generateAISummary(); // Khởi tạo báo cáo AI
   
   // Chạy giả lập mỗi 30 giây
-  setInterval(simulateWasteEvent, 30000);
+  setInterval(() => {
+    simulateWasteEvent();
+    generateAISummary(); // Cập nhật lại báo cáo sau khi có sự kiện mới
+  }, 30000);
+
+  // Nút phân tích lại AI
+  document.getElementById('regenerateAI')?.addEventListener('click', generateAISummary);
 
   initMap();
   initClassificationChart();
