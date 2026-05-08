@@ -1,4 +1,5 @@
 // ===== DASHBOARD JAVASCRIPT =====
+const WORKER_URL = 'https://my-first-worker.hoangthao0503.workers.dev'; // Thay thế bằng URL thực tế sau khi deploy
 
 // ===== MOCK DATA =====
 const BINS_DATA = [
@@ -358,8 +359,9 @@ function showTechDetail(catIndex, itemIndex) {
 }
 
 // ===== REFRESH BUTTON =====
-document.getElementById('refreshBtn')?.addEventListener('click', function() {
+document.getElementById('refreshBtn')?.addEventListener('click', async function() {
   this.querySelector('i').style.animation = 'spin 0.6s ease';
+  await fetchBinsFromWorker();
   setTimeout(() => { this.querySelector('i').style.animation = ''; }, 600);
 });
 
@@ -377,8 +379,41 @@ const style = document.createElement('style');
 style.textContent = '@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }';
 document.head.appendChild(style);
 
+// ===== API INTEGRATION =====
+async function fetchBinsFromWorker() {
+  try {
+    const response = await fetch(`${WORKER_URL}/api/bins`);
+    if (response.ok) {
+      const data = await response.json();
+      if (data && data.length > 0) {
+        // Cập nhật dữ liệu địa phương bằng dữ liệu từ server
+        BINS_DATA.length = 0;
+        BINS_DATA.push(...data);
+        renderBinsTable();
+        renderActivity();
+        initMap(); // Re-init map markers
+      }
+    }
+  } catch (err) {
+    console.error('Không thể kết nối với Worker:', err);
+  }
+}
+
+async function syncBinsToWorker() {
+  try {
+    await fetch(`${WORKER_URL}/api/update`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(BINS_DATA)
+    });
+  } catch (err) {
+    console.error('Lỗi đồng bộ dữ liệu:', err);
+  }
+}
+
 // ===== INIT ALL =====
 document.addEventListener('DOMContentLoaded', () => {
+  fetchBinsFromWorker(); // Lấy dữ liệu từ Cloudflare
   initMap();
   initClassificationChart();
   initTrendChart();
