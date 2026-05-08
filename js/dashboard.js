@@ -382,21 +382,62 @@ document.head.appendChild(style);
 // ===== API INTEGRATION =====
 async function fetchBinsFromWorker() {
   try {
-    const response = await fetch(`${WORKER_URL}/api/bins`);
+    const response = await fetch(`${WORKER_URL}/api/stats`);
     if (response.ok) {
-      const data = await response.json();
-      if (data && data.length > 0) {
-        // Cập nhật dữ liệu địa phương bằng dữ liệu từ server
+      const { bins, alerts } = await response.json();
+      
+      if (bins && bins.length > 0) {
         BINS_DATA.length = 0;
-        BINS_DATA.push(...data);
+        BINS_DATA.push(...bins);
         renderBinsTable();
-        renderActivity();
-        initMap(); // Re-init map markers
+        initMap();
+      }
+      
+      if (alerts) {
+        renderAlerts(alerts);
       }
     }
   } catch (err) {
     console.error('Không thể kết nối với Worker:', err);
   }
+}
+
+function renderAlerts(alerts) {
+  // Cập nhật số lượng cảnh báo trên Badge
+  const badges = document.querySelectorAll('.sidebar__link-badge, .header__btn .badge');
+  badges.forEach(badge => {
+    badge.innerText = alerts.length;
+    badge.style.display = alerts.length > 0 ? 'flex' : 'none';
+  });
+
+  // Cập nhật Activity Feed bằng dữ liệu cảnh báo
+  const container = document.getElementById('activityFeed');
+  if (container && alerts.length > 0) {
+    container.innerHTML = alerts.map(alert => `
+      <div class="activity-item">
+        <div class="activity-icon activity-icon--red"><i class="fas fa-exclamation-triangle"></i></div>
+        <div>
+          <div class="activity-text"><strong>${alert.binId}</strong>: ${alert.message}</div>
+          <div class="activity-time">${new Date(alert.time).toLocaleTimeString()}</div>
+        </div>
+      </div>
+    `).join('');
+  }
+}
+
+function showNotification(message) {
+  const toast = document.createElement('div');
+  toast.className = 'toast-notification';
+  toast.innerHTML = `
+    <i class="fas fa-bell"></i>
+    <span>${message}</span>
+  `;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.classList.add('active'), 10);
+  setTimeout(() => {
+    toast.classList.remove('active');
+    setTimeout(() => toast.remove(), 300);
+  }, 5000);
 }
 
 async function syncBinsToWorker() {
@@ -411,9 +452,34 @@ async function syncBinsToWorker() {
   }
 }
 
+// Giả lập nhận diện rác và thùng đầy
+function simulateWasteEvent() {
+  const randomIndex = Math.floor(Math.random() * BINS_DATA.length);
+  const bin = BINS_DATA[randomIndex];
+  
+  if (bin.fill < 100) {
+    bin.fill += Math.floor(Math.random() * 15);
+    if (bin.fill >= 90) {
+      bin.status = 'full';
+      showNotification(`CẢNH BÁO: Thùng rác ${bin.id} tại ${bin.location} đã đầy!`);
+    } else if (bin.fill > 70) {
+      bin.status = 'warning';
+    }
+    bin.updated = 'Vừa xong';
+    
+    renderBinsTable();
+    syncBinsToWorker(); // Gửi lên Cloudflare
+    fetchBinsFromWorker(); // Lấy lại cảnh báo mới
+  }
+}
+
 // ===== INIT ALL =====
 document.addEventListener('DOMContentLoaded', () => {
-  fetchBinsFromWorker(); // Lấy dữ liệu từ Cloudflare
+  fetchBinsFromWorker();
+  
+  // Chạy giả lập mỗi 30 giây
+  setInterval(simulateWasteEvent, 30000);
+
   initMap();
   initClassificationChart();
   initTrendChart();

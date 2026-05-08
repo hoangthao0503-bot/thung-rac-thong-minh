@@ -22,26 +22,45 @@ export default {
 
 		const url = new URL(request.url);
 
-		// GET /api/bins - Retrieve all bin data
-		if (url.pathname === '/api/bins' && request.method === 'GET') {
-			const data = await env.ECOBIN_KV.get('bins_data');
-			return new Response(data || '[]', {
+		// GET /api/stats - Retrieve all data (bins + alerts)
+		if (url.pathname === '/api/stats' && request.method === 'GET') {
+			const bins = await env.ECOBIN_KV.get('bins_data');
+			const alerts = await env.ECOBIN_KV.get('alerts_data');
+			return new Response(JSON.stringify({
+				bins: JSON.parse(bins || '[]'),
+				alerts: JSON.parse(alerts || '[]')
+			}), {
 				headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
 			});
 		}
 
-		// POST /api/update - Update bin status
+		// POST /api/update - Update bin status & handle alerts
 		if (url.pathname === '/api/update' && request.method === 'POST') {
 			try {
 				const body = await request.json();
-				// In a real app, we would validate and update the specific bin.
-				// For this prototype, we'll just save the whole array sent from dashboard.
 				await env.ECOBIN_KV.put('bins_data', JSON.stringify(body));
+				
+				// Generate alerts for full bins
+				const fullBins = body.filter((b: any) => b.status === 'full');
+				if (fullBins.length > 0) {
+					const existingAlerts = JSON.parse(await env.ECOBIN_KV.get('alerts_data') || '[]');
+					const newAlerts = fullBins.map((b: any) => ({
+						id: `ALERT-${Date.now()}-${b.id}`,
+						binId: b.id,
+						message: `Thùng rác ${b.id} tại ${b.location} đã đầy (${b.fill}%).`,
+						time: new Date().toISOString(),
+						type: 'critical'
+					}));
+					// Keep only latest 20 alerts
+					const updatedAlerts = [...newAlerts, ...existingAlerts].slice(0, 20);
+					await env.ECOBIN_KV.put('alerts_data', JSON.stringify(updatedAlerts));
+				}
+
 				return new Response(JSON.stringify({ success: true }), {
 					headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
 				});
 			} catch (err) {
-				return new Response('Invalid JSON', { status: 400, headers: CORS_HEADERS });
+				return new Response('Error processing update', { status: 400, headers: CORS_HEADERS });
 			}
 		}
 
