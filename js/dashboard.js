@@ -3,16 +3,16 @@ const WORKER_URL = 'https://my-first-worker.hoangthao0503.workers.dev'; // Thay 
 
 // ===== MOCK DATA =====
 const BINS_DATA = [
-  { id: 'BIN-001', location: 'Chung cư Vinhomes Central Park', lat: 10.7942, lng: 106.7214, fill: 85, status: 'warning', updated: '2 phút trước' },
-  { id: 'BIN-002', location: 'Trường ĐH Bách Khoa', lat: 10.7725, lng: 106.6581, fill: 32, status: 'normal', updated: '5 phút trước' },
-  { id: 'BIN-003', location: 'Công viên 23/9', lat: 10.7685, lng: 106.6923, fill: 95, status: 'full', updated: '1 phút trước' },
-  { id: 'BIN-004', location: 'AEON Mall Tân Phú', lat: 10.8018, lng: 106.6198, fill: 45, status: 'normal', updated: '8 phút trước' },
-  { id: 'BIN-005', location: 'Bệnh viện Chợ Rẫy', lat: 10.7558, lng: 106.6595, fill: 72, status: 'warning', updated: '3 phút trước' },
-  { id: 'BIN-006', location: 'Landmark 81 Lobby', lat: 10.7950, lng: 106.7220, fill: 18, status: 'normal', updated: '12 phút trước' },
-  { id: 'BIN-007', location: 'Trường THPT Lê Hồng Phong', lat: 10.7794, lng: 106.6944, fill: 91, status: 'full', updated: '1 phút trước' },
-  { id: 'BIN-008', location: 'Siêu thị CoopMart Lý Thường Kiệt', lat: 10.7732, lng: 106.6531, fill: 56, status: 'normal', updated: '6 phút trước' },
-  { id: 'BIN-009', location: 'Khu dân cư Phú Mỹ Hưng', lat: 10.7295, lng: 106.7184, fill: 67, status: 'warning', updated: '4 phút trước' },
-  { id: 'BIN-010', location: 'Trường ĐH RMIT', lat: 10.7291, lng: 106.6958, fill: 28, status: 'normal', updated: '10 phút trước' },
+  { id: 'BIN-001', location: 'Chung cư Vinhomes Central Park', lat: 10.7942, lng: 106.7214, fill: 85, status: 'warning', updated: '2 phút trước', category: 'Nhựa' },
+  { id: 'BIN-002', location: 'Trường ĐH Bách Khoa', lat: 10.7725, lng: 106.6581, fill: 32, status: 'normal', updated: '5 phút trước', category: 'Giấy' },
+  { id: 'BIN-003', location: 'Công viên 23/9', lat: 10.7685, lng: 106.6923, fill: 95, status: 'full', updated: '1 phút trước', category: 'Kim loại' },
+  { id: 'BIN-004', location: 'AEON Mall Tân Phú', lat: 10.8018, lng: 106.6198, fill: 45, status: 'normal', updated: '8 phút trước', category: 'Hữu cơ' },
+  { id: 'BIN-005', location: 'Bệnh viện Chợ Rẫy', lat: 10.7558, lng: 106.6595, fill: 72, status: 'warning', updated: '3 phút trước', category: 'Nhựa' },
+  { id: 'BIN-006', location: 'Landmark 81 Lobby', lat: 10.7950, lng: 106.7220, fill: 18, status: 'normal', updated: '12 phút trước', category: 'Giấy' },
+  { id: 'BIN-007', location: 'Trường THPT Lê Hồng Phong', lat: 10.7794, lng: 106.6944, fill: 91, status: 'full', updated: '1 phút trước', category: 'Kim loại' },
+  { id: 'BIN-008', location: 'Siêu thị CoopMart Lý Thường Kiệt', lat: 10.7732, lng: 106.6531, fill: 56, status: 'normal', updated: '6 phút trước', category: 'Hữu cơ' },
+  { id: 'BIN-009', location: 'Khu dân cư Phú Mỹ Hưng', lat: 10.7295, lng: 106.7184, fill: 67, status: 'warning', updated: '4 phút trước', category: 'Nhựa' },
+  { id: 'BIN-010', location: 'Trường ĐH RMIT', lat: 10.7291, lng: 106.6958, fill: 28, status: 'normal', updated: '10 phút trước', category: 'Giấy' },
 ];
 
 const LEADERBOARD_DATA = [
@@ -109,57 +109,69 @@ const TECHNOLOGY_DATA = [
   });
 }
 
-// ===== CLASSIFICATION CHART (Doughnut) =====
+let classificationChart = null;
 function initClassificationChart() {
   const ctx = document.getElementById('classificationChart').getContext('2d');
-  new Chart(ctx, {
+  
+  // Tính toán dữ liệu dựa trên BINS_DATA
+  const categories = ['Nhựa', 'Giấy', 'Kim loại', 'Hữu cơ'];
+  const dataValues = categories.map(cat => {
+    return BINS_DATA.filter(b => b.category === cat).reduce((acc, curr) => acc + curr.fill, 0);
+  });
+
+  if (classificationChart) classificationChart.destroy();
+
+  classificationChart = new Chart(ctx, {
     type: 'doughnut',
     data: {
-      labels: ['Nhựa', 'Giấy', 'Kim loại', 'Hữu cơ'],
+      labels: categories,
       datasets: [{
-        data: [35, 25, 15, 25],
+        data: dataValues,
         backgroundColor: ['#3b82f6', '#f59e0b', '#8b5cf6', '#10b981'],
         borderColor: '#1a2235',
         borderWidth: 3,
         hoverBorderWidth: 0,
-        hoverOffset: 8
+        hoverOffset: 12
       }]
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      cutout: '65%',
+      cutout: '72%',
+      animation: { animateRotate: true, animateScale: true },
       plugins: {
         legend: {
           position: 'bottom',
-          labels: { color: '#94a3b8', padding: 16, font: { family: 'Inter', size: 12 }, usePointStyle: true, pointStyleWidth: 10 }
+          labels: { color: '#94a3b8', padding: 20, font: { family: 'Outfit', size: 12, weight: '500' }, usePointStyle: true }
         },
         tooltip: {
-          backgroundColor: '#1a2235',
-          titleColor: '#f1f5f9',
-          bodyColor: '#94a3b8',
-          borderColor: 'rgba(255,255,255,0.1)',
-          borderWidth: 1,
-          cornerRadius: 8,
+          backgroundColor: '#0a0f1c',
+          titleFont: { size: 14, weight: '700' },
           padding: 12,
-          callbacks: { label: (ctx) => ` ${ctx.label}: ${ctx.parsed}% (${(ctx.parsed * 24).toFixed(0)} kg)` }
+          cornerRadius: 10,
+          displayColors: true,
+          callbacks: {
+            label: (ctx) => ` ${ctx.label}: ${ctx.parsed.toLocaleString()} kg tích lũy`
+          }
         }
       }
     }
   });
 }
 
-// ===== TREND CHART (Line) =====
+let trendChart = null;
 function initTrendChart() {
   const ctx = document.getElementById('trendChart').getContext('2d');
   const gradient1 = ctx.createLinearGradient(0, 0, 0, 300);
-  gradient1.addColorStop(0, 'rgba(16, 185, 129, 0.2)');
+  gradient1.addColorStop(0, 'rgba(16, 185, 129, 0.3)');
   gradient1.addColorStop(1, 'rgba(16, 185, 129, 0)');
   const gradient2 = ctx.createLinearGradient(0, 0, 0, 300);
-  gradient2.addColorStop(0, 'rgba(59, 130, 246, 0.15)');
+  gradient2.addColorStop(0, 'rgba(59, 130, 246, 0.2)');
   gradient2.addColorStop(1, 'rgba(59, 130, 246, 0)');
 
-  new Chart(ctx, {
+  if (trendChart) trendChart.destroy();
+
+  trendChart = new Chart(ctx, {
     type: 'line',
     data: {
       labels: ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'],
@@ -168,17 +180,17 @@ function initTrendChart() {
           label: 'Rác phân loại đúng (kg)',
           data: [320, 380, 290, 420, 510, 470, 550],
           borderColor: '#10b981', backgroundColor: gradient1,
-          borderWidth: 2.5, fill: true, tension: 0.4,
-          pointBackgroundColor: '#10b981', pointBorderColor: '#1a2235',
-          pointBorderWidth: 2, pointRadius: 4, pointHoverRadius: 7
+          borderWidth: 3, fill: true, tension: 0.4,
+          pointBackgroundColor: '#10b981', pointBorderColor: '#fff',
+          pointBorderWidth: 2, pointRadius: 4, pointHoverRadius: 8
         },
         {
           label: 'Tổng rác thu gom (kg)',
           data: [380, 430, 350, 480, 570, 530, 610],
           borderColor: '#3b82f6', backgroundColor: gradient2,
-          borderWidth: 2.5, fill: true, tension: 0.4,
-          pointBackgroundColor: '#3b82f6', pointBorderColor: '#1a2235',
-          pointBorderWidth: 2, pointRadius: 4, pointHoverRadius: 7
+          borderWidth: 3, fill: true, tension: 0.4,
+          pointBackgroundColor: '#3b82f6', pointBorderColor: '#fff',
+          pointBorderWidth: 2, pointRadius: 4, pointHoverRadius: 8
         }
       ]
     },
@@ -188,16 +200,19 @@ function initTrendChart() {
       interaction: { mode: 'index', intersect: false },
       plugins: {
         legend: {
-          labels: { color: '#94a3b8', font: { family: 'Inter', size: 12 }, usePointStyle: true, pointStyleWidth: 10, padding: 16 }
+          labels: { color: '#94a3b8', font: { family: 'Outfit', size: 12, weight: '500' }, usePointStyle: true, padding: 20 }
         },
         tooltip: {
-          backgroundColor: '#1a2235', titleColor: '#f1f5f9', bodyColor: '#94a3b8',
-          borderColor: 'rgba(255,255,255,0.1)', borderWidth: 1, cornerRadius: 8, padding: 12
+          backgroundColor: '#0a0f1c', titleFont: { size: 14 }, padding: 12, cornerRadius: 10
         }
       },
       scales: {
-        x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#64748b', font: { size: 12 } } },
-        y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#64748b', font: { size: 12 } }, beginAtZero: true }
+        x: { grid: { display: false }, ticks: { color: '#64748b' } },
+        y: { 
+          grid: { color: 'rgba(255,255,255,0.05)', borderDash: [5, 5] }, 
+          ticks: { color: '#64748b' },
+          beginAtZero: true 
+        }
       }
     }
   });
@@ -468,6 +483,7 @@ function simulateWasteEvent() {
     bin.updated = 'Vừa xong';
     
     renderBinsTable();
+    initClassificationChart(); // Cập nhật biểu đồ phân loại
     syncBinsToWorker(); // Gửi lên Cloudflare
     fetchBinsFromWorker(); // Lấy lại cảnh báo mới
   }
