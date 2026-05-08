@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="EcoBin - Thùng rác phân loại thông minh sử dụng AI Computer Vision, IoT và Cloud Computing. Giải pháp quản lý rác thải cho Smart City.">
+  <title>EcoBin - Thùng Rác Phân Loại Thông Minh | AI & IoT Smart City</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+  <!-- Background Effects -->
+  <div class="bg-grid"></div>
+  <div class="bg-glow bg-glow--green"></div>
+  <div class="bg-glow bg-glow--blue"></div>
+
+  <!-- Navbar -->
+  <nav class="navbar" id="navbar">
+    <div class="container">
+      <a href="#" class="navbar__logo">
+        <div class="navbar__logo-icon">♻️</div>
+        <span>EcoBin</span>
+      </a>
+      <div class="navbar__links" id="navLinks">
+        <a href="#technology">Công nghệ</a>
+        <a href="#how-it-works">Cách hoạt động</a>
+        <a href="#gamification">Điểm thưởng</a>
+        <a href="#impact">Tác động</a>
+        <a href="dashboard.html" class="btn btn--primary btn--sm">
+          <i class="fas fa-chart-line"></i> Dashboard
+        </a>
+      </div>
+      <button class="navbar__mobile" id="mobileToggle">
+        <i class="fas fa-bars"></i>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero" id="hero">
+    <div class="container">
+      <div class="hero__content">
+        <div class="hero__badge">
+          <span class="dot"></span>
+          Smart City Solution 2026
+        </div>
+        <h1 class="hero__title">
+          Thùng Rác <br>
+          <span class="gradient-text">Phân Loại Thông Minh</span>
+        </h1>
+        <p class="hero__desc">
+          Sử dụng AI Computer Vision và IoT để tự động nhận diện & phân loại rác thải. 
+          Giải pháp xanh cho đô thị thông minh, tối ưu hóa thu gom và bảo vệ môi trường.
+        </p>
+        <div class="hero__actions">
+          <a href="#technology" class="btn btn--primary">
+            <i class="fas fa-rocket"></i> Khám phá ngay
+          </a>
+          <a href="dashboard.html" class="btn btn--outline">
+            <i class="fas fa-desktop"></i> Xem Dashboard
+          </a>
+        </div>
+        <div class="hero__stats">
+          <div>
+            <div class="hero__stat-value" data-count="98.5">0</div>
+            <div class="hero__stat-label">% Chính xác AI</div>
+          </div>
+          <div>
+            <div class="hero__stat-value" data-count="4">0</div>
+            <div class="hero__stat-label">Loại rác phân loại</div>
+          </div>
+          <div>
+            <div class="hero__stat-value" data-count="40">0</div>
+            <div class="hero__stat-label">% Tiết kiệm chi phí</div>
+          </div>
+        </div>
+      </div>
+      <div class="hero__visual">
+        <img src="assets/smart_bin_hero.png" alt="EcoBin - Thùng rác thông minh" class="hero__image">
+        <div class="hero__float-card hero__float-card--ai">
+          <div class="card-icon">🧠</div>
+          <div class="card-label">AI Detection</div>
+          <div class="card-value">Nhựa PET ✓</div>
+        </div>
+        <div class="hero__float-card hero__float-card--iot">
+          <div class="card-icon">📡</div>
+          <div class="card-label">Fill Level</div>
+          <div class="card-value">32% — OK</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Technology Section -->
+  <section class="section" id="technology">
+    <div class="container">
+      <div class="text-center">
+        <span class="section-label"><i class="fas fa-microchip"></i> TECHNOLOGY</span>
+        <h2 class="section-title">Nền Tảng Công Nghệ</h2>
+        <p class="section-desc mx-auto">
+          Kết hợp sức mạnh của "Bộ não" (AI), "Cánh tay" (IoT) và "Hệ thần kinh" (Cloud) để vận hành mượt mà.
+        </p>
+      </div>
+      <div class="tech-grid">
+        <!-- AI Card -->
+        <div class="tech-card fade-in">
+          <div class="tech-card__icon tech-card__icon--ai">🧠</div>
+          <h3 class="tech-card__title">AI - Computer Vision</h3>
+          <p class="tech-card__desc">
+            Sử dụng mô hình Deep Learning (YOLOv8) kết hợp Raspberry Pi Camera Module để nhận diện 
+            vật thể thời gian thực. Phân loại chính xác: Nhựa, Giấy, Kim loại, Hữu cơ.
+          </p>
+          <div class="tech-card__tags">
+            <span class="tech-card__tag">YOLOv8</span>
+            <span class="tech-card__tag">TensorFlow Lite</span>
+            <span class="tech-card__tag">Edge AI</span>
+            <span class="tech-card__tag">RPi Camera</span>
+          </div>
+        </div>
+        <!-- IoT Card -->
+        <div class="tech-card fade-in">
+          <div class="tech-card__icon tech-card__icon--iot">📡</div>
+          <h3 class="tech-card__title">IoT - Internet of Things</h3>
+          <p class="tech-card__desc">
+            Cảm biến hồng ngoại phát hiện người, cảm biến siêu âm đo độ đầy. Vi điều khiển 
+            Raspberry Pi/Jetson Nano chạy Edge Computing, điều khiển servo mở ngăn tự động.
+          </p>
+          <div class="tech-card__tags">
+            <span class="tech-card__tag">Raspberry Pi</span>
+            <span class="tech-card__tag">Servo Motor</span>
+            <span class="tech-card__tag">HC-SR04</span>
+            <span class="tech-card__tag">MQTT</span>
+          </div>
+        </div>
+        <!-- Cloud Card -->
+        <div class="tech-card fade-in">
+          <div class="tech-card__icon tech-card__icon--cloud">☁️</div>
+          <h3 class="tech-card__title">Cloud & Dashboard</h3>
+          <p class="tech-card__desc">
+            Toàn bộ dữ liệu được gửi lên Cloud theo thời gian thực. Dashboard giúp đơn vị vận 
+            hành theo dõi vị trí thùng rác, tối ưu lộ trình thu gom và quản lý hệ thống điểm thưởng.
+          </p>
+          <div class="tech-card__tags">
+            <span class="tech-card__tag">AWS / Azure</span>
+            <span class="tech-card__tag">REST API</span>
+            <span class="tech-card__tag">Real-time</span>
+            <span class="tech-card__tag">Analytics</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works -->
+  <section class="section" id="how-it-works" style="background: var(--bg-secondary);">
+    <div class="container">
+      <div class="text-center">
+        <span class="section-label"><i class="fas fa-cogs"></i> PROCESS</span>
+        <h2 class="section-title">Cách Hoạt Động</h2>
+        <p class="section-desc mx-auto">Chỉ 4 bước đơn giản từ khi rác được bỏ vào đến khi dữ liệu cập nhật lên Cloud.</p>
+      </div>
+      <div class="steps">
+        <div class="step fade-in">
+          <div class="step__number">01</div>
+          <div class="step__icon">👋</div>
+          <h4 class="step__title">Phát hiện người dùng</h4>
+          <p class="step__desc">Cảm biến hồng ngoại phát hiện khi có người đến gần, kích hoạt camera và hệ thống.</p>
+        </div>
+        <div class="step fade-in">
+          <div class="step__number">02</div>
+          <div class="step__icon">📸</div>
+          <h4 class="step__title">AI nhận diện rác</h4>
+          <p class="step__desc">Raspberry Pi Camera chụp ảnh, AI phân tích và phân loại ngay lập tức (< 0.5 giây).</p>
+        </div>
+        <div class="step fade-in">
+          <div class="step__number">03</div>
+          <div class="step__icon">🔄</div>
+          <h4 class="step__title">Tự động phân loại</h4>
+          <p class="step__desc">Servo motor mở đúng ngăn (Nhựa / Giấy / Kim loại / Hữu cơ), rác rơi vào đúng vị trí.</p>
+        </div>
+        <div class="step fade-in">
+          <div class="step__number">04</div>
+          <div class="step__icon">☁️</div>
+          <h4 class="step__title">Gửi dữ liệu Cloud</h4>
+          <p class="step__desc">Dữ liệu cập nhật lên Dashboard. Người dùng nhận điểm thưởng cho hành vi phân loại đúng.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Gamification Section -->
+  <section class="section gamification" id="gamification">
+    <div class="container">
+      <div>
+        <span class="section-label"><i class="fas fa-trophy"></i> GAMIFICATION</span>
+        <h2 class="section-title">Tích Điểm Đổi Thưởng</h2>
+        <p class="section-desc">
+          Mỗi lần phân loại rác đúng, bạn được cộng điểm. Tích lũy điểm để đổi phiếu giảm giá, 
+          voucher và nhiều phần thưởng hấp dẫn.
+        </p>
+        <div class="gamification__features">
+          <div class="gamification__feature fade-in">
+            <div class="gamification__feature-icon">🎯</div>
+            <div>
+              <div class="gamification__feature-title">+10 điểm mỗi lần phân loại đúng</div>
+              <div class="gamification__feature-desc">AI xác nhận loại rác, tự động cộng điểm vào tài khoản của bạn.</div>
+            </div>
+          </div>
+          <div class="gamification__feature fade-in">
+            <div class="gamification__feature-icon">🏆</div>
+            <div>
+              <div class="gamification__feature-title">Bảng xếp hạng cộng đồng</div>
+              <div class="gamification__feature-desc">Thi đua với cư dân trong chung cư, trường học để giành giải thưởng hàng tháng.</div>
+            </div>
+          </div>
+          <div class="gamification__feature fade-in">
+            <div class="gamification__feature-icon">🎁</div>
+            <div>
+              <div class="gamification__feature-title">Đổi điểm lấy phần thưởng</div>
+              <div class="gamification__feature-desc">Voucher mua sắm, giảm phí dịch vụ, quà tặng xanh và nhiều ưu đãi khác.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="gamification__mockup fade-in">
+        <div class="mockup__header">
+          <div class="mockup__avatar">👤</div>
+          <div>
+            <div class="mockup__name">Nguyễn Văn A</div>
+            <div class="mockup__level">⭐ Level 12 — Eco Warrior</div>
+          </div>
+        </div>
+        <div class="mockup__points">
+          <div class="mockup__points-value" data-count="2450">0</div>
+          <div class="mockup__points-label">🌱 EcoPoints hiện tại</div>
+        </div>
+        <div class="mockup__rewards">
+          <div class="mockup__reward">
+            <div class="mockup__reward-icon">🛒</div>
+            <div class="mockup__reward-name">Voucher CoopMart</div>
+            <div class="mockup__reward-pts">500 pts</div>
+          </div>
+          <div class="mockup__reward">
+            <div class="mockup__reward-icon">☕</div>
+            <div class="mockup__reward-name">Highlands Coffee</div>
+            <div class="mockup__reward-pts">300 pts</div>
+          </div>
+          <div class="mockup__reward">
+            <div class="mockup__reward-icon">🌳</div>
+            <div class="mockup__reward-name">Trồng cây xanh</div>
+            <div class="mockup__reward-pts">1000 pts</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Impact Stats -->
+  <section class="section" id="impact">
+    <div class="container">
+      <div class="text-center">
+        <span class="section-label"><i class="fas fa-chart-bar"></i> IMPACT</span>
+        <h2 class="section-title">Tác Động Thực Tế</h2>
+        <p class="section-desc mx-auto">Những con số ấn tượng từ hệ thống EcoBin tại các dự án thí điểm.</p>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card fade-in">
+          <div class="stat-card__icon">🏢</div>
+          <div class="stat-card__value" data-count="150">0</div>
+          <div class="stat-card__label">Thùng rác triển khai</div>
+        </div>
+        <div class="stat-card fade-in">
+          <div class="stat-card__icon">♻️</div>
+          <div class="stat-card__value" data-count="85">0</div>
+          <div class="stat-card__label">% Tỷ lệ tái chế tăng</div>
+        </div>
+        <div class="stat-card fade-in">
+          <div class="stat-card__icon">🚛</div>
+          <div class="stat-card__value" data-count="40">0</div>
+          <div class="stat-card__label">% Giảm chi phí thu gom</div>
+        </div>
+        <div class="stat-card fade-in">
+          <div class="stat-card__icon">🌍</div>
+          <div class="stat-card__value" data-count="12">0</div>
+          <div class="stat-card__label">Tấn CO₂ giảm phát thải</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta" id="contact">
+    <div class="container">
+      <div class="cta__box">
+        <h2 class="cta__title">Sẵn sàng cho Đô thị Thông minh?</h2>
+        <p class="cta__desc">
+          Liên hệ ngay để nhận tư vấn triển khai EcoBin cho chung cư, trường học hoặc doanh nghiệp của bạn.
+        </p>
+        <div class="cta__actions">
+          <a href="mailto:contact@ecobin.vn" class="btn btn--primary">
+            <i class="fas fa-envelope"></i> Liên hệ ngay
+          </a>
+          <a href="dashboard.html" class="btn btn--outline">
+            <i class="fas fa-play"></i> Xem Demo
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__copy">© 2026 EcoBin — Smart Waste Classification. All rights reserved.</div>
+      <div class="footer__links">
+        <a href="#technology">Công nghệ</a>
+        <a href="#how-it-works">Hoạt động</a>
+        <a href="dashboard.html">Dashboard</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

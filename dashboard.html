@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="EcoBin Dashboard - Quản lý hệ thống thùng rác thông minh, theo dõi trạng thái, phân tích dữ liệu và hệ thống điểm thưởng.">
+  <title>EcoBin Dashboard — Quản lý Thùng rác Thông minh</title>
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body>
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <a href="index.html" class="sidebar__logo">
+      <div class="sidebar__logo-icon">♻️</div>
+      <span>EcoBin</span>
+    </a>
+    <nav class="sidebar__nav">
+      <div class="sidebar__section">
+        <div class="sidebar__section-title">Tổng quan</div>
+        <a href="#" class="sidebar__link active" data-page="overview">
+          <span class="sidebar__link-icon"><i class="fas fa-th-large"></i></span>
+          Dashboard
+        </a>
+        <a href="#" class="sidebar__link" data-page="map">
+          <span class="sidebar__link-icon"><i class="fas fa-map-marked-alt"></i></span>
+          Bản đồ
+        </a>
+        <a href="#" class="sidebar__link" data-page="analytics">
+          <span class="sidebar__link-icon"><i class="fas fa-chart-pie"></i></span>
+          Phân tích
+        </a>
+      </div>
+      <div class="sidebar__section">
+        <div class="sidebar__section-title">Quản lý</div>
+        <a href="#" class="sidebar__link">
+          <span class="sidebar__link-icon"><i class="fas fa-trash"></i></span>
+          Thùng rác
+          <span class="sidebar__link-badge">3</span>
+        </a>
+        <a href="#" class="sidebar__link">
+          <span class="sidebar__link-icon"><i class="fas fa-truck"></i></span>
+          Thu gom
+        </a>
+        <a href="#" class="sidebar__link">
+          <span class="sidebar__link-icon"><i class="fas fa-trophy"></i></span>
+          Điểm thưởng
+        </a>
+      </div>
+      <div class="sidebar__section">
+        <div class="sidebar__section-title">Hệ thống</div>
+        <a href="#" class="sidebar__link">
+          <span class="sidebar__link-icon"><i class="fas fa-bell"></i></span>
+          Cảnh báo
+          <span class="sidebar__link-badge">5</span>
+        </a>
+        <a href="#" class="sidebar__link">
+          <span class="sidebar__link-icon"><i class="fas fa-cog"></i></span>
+          Cài đặt
+        </a>
+      </div>
+    </nav>
+    <div class="sidebar__footer">
+      <div class="sidebar__avatar">AD</div>
+      <div>
+        <div class="sidebar__user-name">Admin</div>
+        <div class="sidebar__user-role">Quản trị viên</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main">
+    <!-- Header -->
+    <header class="header">
+      <h1 class="header__title">📊 Dashboard</h1>
+      <div class="header__actions">
+        <div class="header__search">
+          <i class="fas fa-search" style="color: var(--text-muted);"></i>
+          <input type="text" placeholder="Tìm thùng rác, khu vực...">
+        </div>
+        <button class="header__btn" title="Thông báo">
+          <i class="fas fa-bell"></i>
+          <span class="badge">5</span>
+        </button>
+        <button class="header__btn" title="Làm mới dữ liệu" id="refreshBtn">
+          <i class="fas fa-sync-alt"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Dashboard Content -->
+    <div class="dashboard">
+      <!-- Stats Row -->
+      <div class="stats-row">
+        <div class="stat-card" id="stat-bins">
+          <div class="stat-card__header">
+            <div class="stat-card__icon stat-card__icon--green"><i class="fas fa-trash"></i></div>
+            <div class="stat-card__trend stat-card__trend--up"><i class="fas fa-arrow-up"></i> 12%</div>
+          </div>
+          <div class="stat-card__value">150</div>
+          <div class="stat-card__label">Tổng thùng rác</div>
+        </div>
+        <div class="stat-card" id="stat-waste">
+          <div class="stat-card__header">
+            <div class="stat-card__icon stat-card__icon--blue"><i class="fas fa-recycle"></i></div>
+            <div class="stat-card__trend stat-card__trend--up"><i class="fas fa-arrow-up"></i> 8%</div>
+          </div>
+          <div class="stat-card__value">2.4T</div>
+          <div class="stat-card__label">Rác phân loại hôm nay</div>
+        </div>
+        <div class="stat-card" id="stat-points">
+          <div class="stat-card__header">
+            <div class="stat-card__icon stat-card__icon--orange"><i class="fas fa-coins"></i></div>
+            <div class="stat-card__trend stat-card__trend--up"><i class="fas fa-arrow-up"></i> 23%</div>
+          </div>
+          <div class="stat-card__value">48.2K</div>
+          <div class="stat-card__label">Điểm thưởng phát hành</div>
+        </div>
+        <div class="stat-card" id="stat-accuracy">
+          <div class="stat-card__header">
+            <div class="stat-card__icon stat-card__icon--purple"><i class="fas fa-brain"></i></div>
+            <div class="stat-card__trend stat-card__trend--up"><i class="fas fa-arrow-up"></i> 2%</div>
+          </div>
+          <div class="stat-card__value">98.5%</div>
+          <div class="stat-card__label">Độ chính xác AI</div>
+        </div>
+      </div>
+
+      <!-- Map & Classification Chart -->
+      <div class="grid-2">
+        <div class="panel">
+          <div class="panel__header">
+            <h3 class="panel__title"><i class="fas fa-map-marked-alt" style="color: var(--accent-cyan); margin-right: 8px;"></i>Bản đồ Thùng rác</h3>
+            <span class="panel__action">Xem toàn bộ →</span>
+          </div>
+          <div class="map-container">
+            <div id="map"></div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel__header">
+            <h3 class="panel__title"><i class="fas fa-chart-pie" style="color: var(--accent-purple); margin-right: 8px;"></i>Phân loại rác hôm nay</h3>
+            <span class="panel__action">Chi tiết →</span>
+          </div>
+          <div class="chart-container">
+            <canvas id="classificationChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Waste Trend Chart & Leaderboard -->
+      <div class="grid-3-1">
+        <div class="panel">
+          <div class="panel__header">
+            <h3 class="panel__title"><i class="fas fa-chart-line" style="color: var(--accent-green); margin-right: 8px;"></i>Xu hướng rác thải 7 ngày</h3>
+            <span class="panel__action">Xuất báo cáo →</span>
+          </div>
+          <div class="chart-container">
+            <canvas id="trendChart"></canvas>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel__header">
+            <h3 class="panel__title"><i class="fas fa-trophy" style="color: var(--accent-orange); margin-right: 8px;"></i>Bảng xếp hạng</h3>
+            <span class="panel__action">Tất cả →</span>
+          </div>
+          <div class="panel__body" id="leaderboard"></div>
+        </div>
+      </div>
+
+      <!-- Bins Table & Activity Feed -->
+      <div class="grid-3-1">
+        <div class="panel">
+          <div class="panel__header">
+            <h3 class="panel__title"><i class="fas fa-list" style="color: var(--accent-blue); margin-right: 8px;"></i>Trạng thái Thùng rác</h3>
+            <span class="panel__action">Quản lý →</span>
+          </div>
+          <div class="panel__body" style="padding: 0;">
+            <table class="bins-table" id="binsTable">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Vị trí</th>
+                  <th>Độ đầy</th>
+                  <th>Trạng thái</th>
+                  <th>Cập nhật</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel__header">
+            <h3 class="panel__title"><i class="fas fa-clock" style="color: var(--accent-cyan); margin-right: 8px;"></i>Hoạt động gần đây</h3>
+            <span class="panel__action">Tất cả →</span>
+          </div>
+          <div class="panel__body" id="activityFeed"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="js/dashboard.js"></script>
+</body>
+</html>
